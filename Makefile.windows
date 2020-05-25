@@ -1,0 +1,28 @@
+TARGET_OS = windows
+TARGET_ARCH = x86
+
+export CC = gcc
+export CXX = g++
+export CPP = cpp
+export AR = ar
+export LD = g++
+export STRIP = strip
+export OBJCOPY = objcopy
+
+#PLATFORM_FLAGS = -D__PLATFORM_LINUX__ -D_LARGEFILE64_SOURCE
+STD_FLAGS = $(PLATFORM_FLAGS) -DHAVE_CONFIG_H -Og -g3 -Wall -fmessage-length=0 -ffunction-sections -fdata-sections -DPOCO_OS_FAMILY_WINDOWS -U__STRICT_ANSI__ -DDLLAPI=
+# -DPOCO_HAVE_GCC_ATOMICS -DPOCO_STATIC -DPOCO_UTIL_NO_XMLCONFIGURATION -DBOOST_ASIO_WINDOWS -DBOOST_LOG_EVENT_USE_WINAPI
+STD_CFLAGS = $(STD_FLAGS)
+STD_CXXFLAGS = -std=c++11 $(STD_FLAGS)
+# STD_LDFLAGS = -L $(TOP)/build/$(TARGET)/libfcgi/lib \
+				# -L $(TOP)/build/$(TARGET)/dlt/lib \
+				# -L $(TOP)/build/$(TARGET)/libboost/lib \
+				# -L $(TOP)/build/$(TARGET)/poco/lib \
+				# -Wl,--gc-sections
+# STD_INCLUDE = -I. -I $(TOP)/build/$(TARGET)/libfcgi/include \
+				# -I $(TOP)/build/$(TARGET)/dlt/include \
+				# -I $(TOP)/build/$(TARGET)/libboost/include \
+				# -I $(TOP)/build/$(TARGET)/poco/include \
+				# -I $(TOP)/extern/boost-1.58.0
+STD_LIBDIRS = $(STD_LDFLAGS)
+STD_LIBS = -lssl -lcrypto -lws2_32 -lIphlpapi
