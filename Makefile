@@ -35,18 +35,24 @@ export TARGET_OS
 export TARGET_ARCH
 export TOOLCHAIN_NAME
 
-all: json foundation net
-
-json:
-	$(MAKE) -C ./json
+all: foundation net xml json util
 
 foundation:
 	$(MAKE) -C ./foundation
 
 net:
 	$(MAKE) -C ./net
+	
+xml:
+	$(MAKE) -C ./xml
+	
+util:
+	$(MAKE) -C ./util
 
-clean: clean-json clean-foundation clean-net
+json:
+	$(MAKE) -C ./json
+
+clean: clean-json clean-foundation clean-net clean-util
 
 clean-foundation:
 	$(MAKE) -C ./foundation clean
@@ -54,7 +60,13 @@ clean-foundation:
 clean-net:
 	$(MAKE) -C ./net clean
 	
+clean-util:
+	$(MAKE) -C ./util clean
+	
 clean-json:
 	$(MAKE) -C ./json clean
+	
+clean-xml:
+	$(MAKE) -C ./xml clean
 
-.PHONY: all clean foundation net json clean-net clean-foundation clean-json
+.PHONY: all clean foundation net util json xml clean-net clean-foundation clean-json clean-util clean-xml

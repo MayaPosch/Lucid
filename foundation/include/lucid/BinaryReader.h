@@ -32,7 +32,8 @@ class TextEncoding;
 class TextConverter;
 
 
-class Foundation_API BinaryReader
+// FIXME: removed Foundation_EXPORTS from class to fix compilation with MinGW.
+class BinaryReader
 	/// This class reads basic types (and std::vectors thereof)
 	/// in binary form into an input stream.
 	/// It provides an extractor-based interface similar to istream.

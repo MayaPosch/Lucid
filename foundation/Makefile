@@ -5,13 +5,18 @@ VERSION := 0.1
 
 INCLUDE = $(STD_INCLUDE) -Iinclude -I$(TOP)/build/$(TARGET)/lucid/include
 CFLAGS = $(STD_CFLAGS) $(INCLUDE)
-SHARED_FLAGS := -fPIC -shared -Wl,-soname,$(OUTPUT).so.$(VERSION)
+SHARED_FLAGS := $(STD_SHARED_FLAGS) -fPIC -shared -Wl,-soname,$(OUTPUT).so.$(VERSION)
 
-OBJROOT := $(TOP)/build/$(TARGET)/lucid/obj
+OBJROOT := ../build/$(TARGET)/lucid/obj
 INCLOUT := $(TOP)/build/$(TARGET)/lucid
 #SOURCES := $(wildcard src/*.cpp)
 HEADERS := $(addprefix $(INCLOUT)/,$(wildcard include/lucid/*.h)) $(addprefix $(INCLOUT)/,$(wildcard include/lucid/dynamic/*.h))
+LD_FLAGS := $(STD_LDFLAGS)
 LIBS := $(STD_LIBS) -lz -lpcre
+
+# ifeq ($(TARGET_OS), windows)
+# SHARED_FLAGS += -DFoundation_EXPORTS
+# endif
 
 # Filter out files (OpenVMS-specific)
 #SOURCES := $(filter-out src/OpcomChannel.cpp, $(SOURCES))
@@ -185,7 +190,7 @@ SHARED_OBJECTS := $(addprefix $(OBJROOT)/foundation/shared/,$(notdir $(SOURCES:.
 
 #$(info Headers are [${HEADERS}])
 
-all: makedir $(TOP)/build/$(TARGET)/lucid/lib/$(OUTPUT).a \
+all: makedir writeobj $(TOP)/build/$(TARGET)/lucid/lib/$(OUTPUT).a \
 		$(TOP)/build/$(TARGET)/lucid/lib/$(OUTPUT).so.$(VERSION) $(HEADERS)
 
 $(OBJROOT)/foundation/static/%.o: src/%.cpp
@@ -206,15 +211,22 @@ makedir:
 	$(MKDIR) $(TOP)/build/$(TARGET)/lucid/lib
 	$(MKDIR) $(TOP)/build/$(TARGET)/lucid/include/lucid/dynamic
 	
+writeobj:
+	$(file >$(TOP)/build/$(TARGET)/lucid/obj/foundation/shared/s_objects.psr, $(SHARED_OBJECTS) $(SHARED_COBJECTS))
+	
 $(INCLOUT)/%.h: %.h
 	$(CP) $< $(INCLOUT)/$<
 
 $(TOP)/build/$(TARGET)/lucid/lib/$(OUTPUT).a: $(OBJECTS) $(COBJECTS)
 	-rm -f $@
 	$(AR) rcs $@ $^
+	cp $@ $@.debug
+	$(STRIP) -S --strip-unneeded $@
 	
 $(TOP)/build/$(TARGET)/lucid/lib/$(OUTPUT).so.$(VERSION): $(SHARED_OBJECTS) $(SHARED_COBJECTS)
-	$(CXX) -o $@ $(CFLAGS) $(SHARED_FLAGS) $(SHARED_OBJECTS) $(SHARED_COBJECTS) $(LIBS)
+	$(CXX) -o $@ $(SHARED_FLAGS) $(LD_FLAGS) @$(TOP)/build/$(TARGET)/lucid/obj/foundation/shared/s_objects.psr $(LIBS)
+	cp $@ $@.debug
+	$(STRIP) -S --strip-unneeded $@
 	
 clean:
-	$(RM) $(OBJECTS)
+	$(RM) $(OBJECTS) $(COBJECTS) $(SHARED_OBJECTS) $(SHARED_COBJECTS)

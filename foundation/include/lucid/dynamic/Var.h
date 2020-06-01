@@ -2341,7 +2341,7 @@ inline bool operator >= (const unsigned long& other, const Var& da)
 
 
 //@ deprecated
-typedef dynamic::Var dynamicAny;
+typedef dynamic::Var DynamicAny;
 
 
 } // namespace Lucid

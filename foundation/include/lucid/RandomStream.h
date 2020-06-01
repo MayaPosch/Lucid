@@ -26,7 +26,8 @@
 namespace Lucid {
 
 
-class Foundation_API RandomBuf: public BufferedStreamBuf
+// FIXME: removed Foundation_EXPORTS from class to fix compilation with MinGW.
+class RandomBuf: public BufferedStreamBuf
 	/// This streambuf generates random data.
 	/// On Windows NT, the cryptographic API is used.
 	/// On Unix, /dev/random is used, if available.
@@ -57,7 +58,8 @@ protected:
 };
 
 
-class Foundation_API RandomInputStream: public RandomIOS, public std::istream
+// FIXME: removed Foundation_EXPORTS from class to fix compilation with MinGW.
+class RandomInputStream: public RandomIOS, public std::istream
 	/// This istream generates random data
 	/// using the RandomBuf.
 {

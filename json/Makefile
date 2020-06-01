@@ -1,18 +1,19 @@
 include ../Makefile.$(TARGET)
 
-OUTPUT = libLucidJson
+OUTPUT := libLucidJson
 VERSION := 0.1
 
 INCLUDE = $(STD_INCLUDE) -Iinclude -I$(TOP)/build/$(TARGET)/lucid/include
 CFLAGS = $(STD_CFLAGS) $(INCLUDE)
-SHARED_FLAGS := -fPIC -shared -Wl,-soname,$(OUTPUT).so.$(VERSION)
+SHARED_FLAGS := $(STD_SHARED_FLAGS) -fPIC -shared -Wl,-soname,$(OUTPUT).so.$(VERSION)
 
-OBJROOT = $(TOP)/build/$(TARGET)/lucid/obj
+OBJROOT = ../build/$(TARGET)/lucid/obj
 INCLOUT = $(TOP)/build/$(TARGET)/lucid
 
 CSOURCES := $(wildcard src/*.c)
 SOURCES := $(wildcard src/*.cpp)
 HEADERS := $(addprefix $(INCLOUT)/,$(wildcard include/lucid/json/*.h))
+LD_FLAGS := $(STD_LDFLAGS)
 LIBS := -L$(TOP)/build/$(TARGET)/lucid/lib -lLucidFoundation $(STD_LIBS) 
 
 COBJECTS := $(addprefix $(OBJROOT)/json/static/,$(notdir $(CSOURCES:.c=.o)))
@@ -47,9 +48,13 @@ $(INCLOUT)/%.h: %.h
 $(TOP)/build/$(TARGET)/lucid/lib/$(OUTPUT).a: $(OBJECTS) $(COBJECTS)
 	-rm -f $@
 	$(AR) rcs $@ $^
+	cp $@ $@.debug
+	$(STRIP) -S --strip-unneeded $@
 	
 $(TOP)/build/$(TARGET)/lucid/lib/$(OUTPUT).so.$(VERSION): $(SHARED_OBJECTS) $(SHARED_COBJECTS)
-	$(CXX) -o $@ $(CFLAGS) $(SHARED_FLAGS) $(SHARED_OBJECTS) $(SHARED_COBJECTS) $(LIBS)
+	$(CXX) -o $@ $(LD_FLAGS) $(SHARED_FLAGS) $(SHARED_OBJECTS) $(SHARED_COBJECTS) $(LIBS)
+	cp $@ $@.debug
+	$(STRIP) -S --strip-unneeded $@
 	
 clean:
 	$(RM) $(OBJECTS)
